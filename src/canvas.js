@@ -22,6 +22,24 @@ export function canvas() {
   let leftPressed = false;
   let rightPressed = false;
 
+  // Bloques
+  const brickRowCount = 3;
+  const brickColumnCount = 5;
+  const brickWidth = 75;
+  const brickHeight = 20;
+  const brickPadding = 10;
+  const brickOfsetTop = 30;
+  const brickOfsetLeft = 30;
+
+  const bricks = [];
+
+  for (let col = 0; col < brickColumnCount; col++) {
+    bricks[col] = [];
+    for (let row = 0; row < brickRowCount; row++) {
+      bricks[col][row] = { x: 0, y: 0 };
+    }
+  }
+
   document.addEventListener("keydown", keyDownHandler, false);
   document.addEventListener("keyup", keyUpHandler, false);
 
@@ -50,6 +68,7 @@ export function canvas() {
 
   let myRandomColor = getRandomHexColor();
 
+  // * FN draw
   function drawBall() {
     ctx.beginPath();
     ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
@@ -66,7 +85,23 @@ export function canvas() {
     ctx.closePath();
   }
 
-  // Dibuja un mensaje de Game Over en el centro del canvas
+  function drawBricks() {
+    for (let col = 0; col < brickColumnCount; col++) {
+      for (let row = 0; row < brickRowCount; row++) {
+        const brickX = col * (brickWidth + brickPadding) + brickOfsetLeft;
+        const brickY = row * (brickHeight + brickPadding) + brickOfsetTop;
+        bricks[col][row].x = brickX;
+        bricks[col][row].y = brickY;
+        ctx.beginPath();
+        ctx.rect(0, 0, brickWidth, brickHeight);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+      }
+    }
+  }
+
+  // * Dibuja un mensaje de Game Over en el centro del canvas
   function drawGameOverText() {
     ctx.save();
     ctx.fillStyle = "rgba(0,0,0,0.6)";
@@ -97,18 +132,21 @@ export function canvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     drawPaddle();
+    drawBricks();
     drawBall();
 
     if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
       dx = -dx;
-      myRandomColor = getRandomHexColor();
+      // myRandomColor = getRandomHexColor();
     }
     // if (y + dy > canvas.height - ballRadius || y + dy < ballRadius) {
     if (y + dy < ballRadius) {
       dy = -dy;
-      myRandomColor = getRandomHexColor();
+      // myRandomColor = getRandomHexColor();
     } else if (y + dy > canvas.height - ballRadius) {
       if (x > paddleX && x < paddleX + paddleWidth) {
+        dx -= 1;
+        dy += 1;
         dy = -dy;
         myRandomColor = getRandomHexColor();
       } else {
